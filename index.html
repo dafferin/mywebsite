@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Happy Birthday HUBBY!</title>
+    <style>
+      body {
+        background: #ffe0e6;
+        font-family: 'Segoe UI', Arial, sans-serif;
+        color: #4b2e83;
+        margin: 0;
+        padding: 0;
+      }
+      .container {
+        max-width: 600px;
+        margin: 40px auto;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px #f6b1c3;
+        padding: 32px;
+        text-align: center;
+      }
+      h1 {
+        font-size: 2.5em;
+        margin-bottom: 0.2em;
+      }
+      img {
+        border-radius: 50%;
+        width: 180px;
+        height: 180px;
+        object-fit: cover;
+        margin-bottom: 24px;
+        border: 4px solid #f6b1c3;
+      }
+      .memories {
+        margin: 30px 0;
+        text-align: left;
+      }
+      .memories ul {
+        padding-left: 20px;
+      }
+      .footer {
+        margin-top: 32px;
+        font-size: 1.1em;
+        color: #b07bac;
+      }
+      /* Message Modal Styles */
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 50;
+        left: 0;
+        top: 0;
+        width: 100vw;
+        height: 100vh;
+        overflow: auto;
+        background: rgba(0,0,0,0.4);
+        justify-content: center;
+        align-items: center;
+      }
+      .modal-content {
+        background: #fff;
+        padding: 32px 22px;
+        border-radius: 16px;
+        max-width: 340px;
+        box-shadow: 0 4px 24px #f6b1c3;
+        text-align: center;
+        position: relative;
+        animation: modalZoom 0.4s;
+      }
+      @keyframes modalZoom {
+        0% {transform: scale(0.6);}
+        100% {transform: scale(1);}
+      }
+      .close {
+        position: absolute;
+        right: 13px;
+        top: 9px;
+        font-size: 1.5em;
+        cursor: pointer;
+        color: #b07bac;
+      }
+      .message-btn {
+        margin: 7px 3px;
+        padding: 10px 18px;
+        border: none;
+        background: #f6b1c3;
+        color: #fff;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 1em;
+        transition: background .15s;
+      }
+      .message-btn:hover {
+        background: #e75480;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Happy Birthday, Love!</h1>
+      <img src="your-photo.jpg" alt="A lovely photo of us">
+      <p>To my amazing boyfriend,<br>
+      Wishing you the happiest birthday! Here’s to more memories, laughter, and love together.</p>
+      <div class="memories">
+        <h2>Favorite Memories Together</h2>
+        <ul>
+          <li>Our first hug and kiss ❤️🌎</li>
+          <li>That rainy day walk ☔</li>
+          <li>Your hilarious dance moves (actually i was watching u the whole time u were dancing on our reunion....u were soooo cute while dancing and i couldnt take my eyes of u) 🕺</li>
+          <li>Every moment with you ❤️</li>
+        </ul>
+        
+      </div>
+      <!-- Message Buttons -->
+       
+      <h2>Messages for Eruma</h2>
+      <div>
+        <button class="message-btn" id="message-btn-1">When You Miss Me😢❤️</button>
+        <button class="message-btn" id="message-btn-2">When You Need Encouragement🤸‍♂️🏋️‍♂️🚵‍♂️</button>
+        <button class="message-btn" id="message-btn-3">When You're Feeling Down😖</button>
+        <button class="message-btn" id="message-btn-4">When you are sick (having fever)🤒</button>
+        <button class="message-btn" id="message-btn-5">When your poo poo💩💩 won't go</button>
+        <button class="message-btn" id="message-btn-6">When You Can't Sleep😒</button>
+        <button class="message-btn" id="message-btn-7">When you feel irritated😒</button>
+      </div>
+      <div class="footer">
+        With all my love,<br>
+        Your smol lil MUMU
+      </div>
+    </div>
+    <!-- Message Modal -->
+    <div id="message-modal" class="modal">
+      <div class="modal-content">
+        <span class="close" id="close-message-modal">&times;</span>
+        <h2 id="modal-title"></h2>
+        <p id="modal-message"></p>
+      </div>
+    </div>
+    <script>
+      // Messages modal functionality
+      const messageModal = document.getElementById("message-modal");
+      const closeMessageModal = document.getElementById("close-message-modal");
+      const modalTitle = document.getElementById("modal-title");
+      const modalMessage = document.getElementById("modal-message");
+
+      // Messages data
+      const messages = {
+        1: {
+          title: "When You Miss Me😢❤️",
+          message:
+            "Even though we’re apart, I can feel you with me in every quiet moment. Distance may keep us from seeing each other, but it can’t diminish the bond we share. Whenever you look up at the night sky, know that I’m looking at the same stars, thinking of you. Every day brings me closer to you, and I hold onto that hope until we’re together again." },
+        2: {
+          title: "When You Need Encouragement🤸‍♂️🏋️‍♂️🚵‍♂️",
+          message:
+            "You are stronger than you know and braver than you believe. I've seen you overcome so many challenges with grace and determination. Whatever you're facing now, I believe in you completely. Take a deep breath, stand tall, and remember that I'm cheering for you every step of the way.",
+        },
+        3: {
+          title: "When You're Feeling Down😖",
+          message:
+            "It's okay not to be okay sometimes. Your feelings are valid, and this moment will pass. Think of all the storms we've weathered together already. I wish I could be there to hold you, but please know that my heart holds space for your pain. Be gentle with yourself today, and remember that tomorrow brings new light.",
+        },
+        4: {
+          title: "When you are sick (having fever)🤒",
+          message:
+            "Remember to go to hospital baby....take your medicine da....sleep take some rest da kutty...i know it is hard to face it on your own but trust me ill take good care of my lovely cutie lil patutieeeeeeee when we start living together. ill make  hot soup and cook delecious food for my lil chella kutty muahhhhhh.",
+        },
+        5: {
+          title: "When your poo poo 💩won't go",
+          message:
+            "I'm proud of you for pooping💩 every single day . U do a very good job in pooping💩 bcoz u take 20 mins for it and i know pooping💩 is special for u da...but sometimed pooping may become hard when u eat lot of fastfood like parotta. So to make pooping easier drink plenty of water my love . Mumu is here always to assist u in pooping and peeing...but dont poop ur pants because it is haed to wash and u will get nice beatings on ur buttoks.",
+        },
+        6: {
+          title: "When You Can't Sleep",
+          message:
+            "Panni maadu kalutha kuttyyy , daily nyt uh work tha enoda pondati nu daily nyt work work nu irunthutu....sudden ah nyt thoonganum nah epdi thookam varum...hmph hmph...athuku tha nyt lam pondati ah nenachitu thoonganu...work ah nenachitu thoonguna apdi tha eruma erumaa.....(ipo ipdi thituveee ana netla papa va mu chest mela padukavachi nalla gentle ah hapr ah stroke panni enoda chella bubu kutty ah thoonga vaipe daaaaa...muah muahhh....apdiyum onaku thookam varale nah nalla matter panitu thoongalam....apdiyum thookam varale nah nala broom stick eduthu adi adi nu onna adicha nalla thoonguva...hehe.)",
+        },
+        7: {
+          title: "When you feel irritated😒",
+          message:
+            "Papa...it is normal to feel irritated over simple stuff da ma...but always remember if u can handle me (the annoying and irritating girlfriend in the whole world), you can handle anything da baby maa...cheer up baby...muah muahhhh"  },
+      };
+
+      // Message button event listeners
+      for (let i = 1; i <= 7; i++) {
+        document
+          .getElementById(`message-btn-${i}`)
+          .addEventListener("click", function () {
+            modalTitle.textContent = messages[i].title;
+            modalMessage.textContent = messages[i].message;
+            messageModal.style.display = "flex";
+          });
+      }
+
+      // Close message modal
+      closeMessageModal.addEventListener("click", function () {
+        messageModal.style.display = "none";
+      });
+
+      // Close modals when clicking outside
+      window.addEventListener("click", function (event) {
+        if (event.target === messageModal) {
+          messageModal.style.display = "none";
+        }
+      });
+    </script>
+  </body>
+</html>
