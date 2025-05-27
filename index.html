@@ -23,6 +23,8 @@
       h1 {
         font-size: 2.5em;
         margin-bottom: 0.2em;
+        min-height: 1.6em;
+        letter-spacing: 2px;
       }
       img {
         border-radius: 50%;
@@ -47,6 +49,14 @@
       .memories ul {
         padding-left: 20px;
       }
+      .memories li {
+        opacity: 0;
+        transform: translateX(-30px);
+        animation: fadeInLeft 0.7s forwards;
+      }
+      @keyframes fadeInLeft {
+        to { opacity: 1; transform: translateX(0);}
+      }
       .footer {
         margin-top: 32px;
         font-size: 1.1em;
@@ -65,6 +75,14 @@
         background: rgba(0,0,0,0.4);
         justify-content: center;
         align-items: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s;
+      }
+      .modal.show {
+        display: flex;
+        opacity: 1;
+        pointer-events: auto;
       }
       .modal-content {
         background: #fff;
@@ -102,11 +120,27 @@
       .message-btn:hover {
         background: #e75480;
       }
+      /* Heart floating animation */
+      .heart {
+        position: fixed;
+        font-size: 2em;
+        color: #e75480;
+        opacity: 0.7;
+        animation: floatUp 3s linear forwards;
+        z-index: 999;
+        pointer-events: none;
+      }
+      @keyframes floatUp {
+        0% { transform: translateY(0); opacity: 0.8;}
+        80% { opacity: 1;}
+        100% { transform: translateY(-200px); opacity: 0;}
+      }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   </head>
   <body>
     <div class="container">
-      <h1>Happy Birthday, Love!</h1>
+      <h1><span id="typewriter"></span></h1>
       <img src="your-photo.jpg" alt="A lovely photo of us">
 
       <!-- Added video section below the image -->
@@ -116,6 +150,9 @@
         Your browser does not support the video tag.
       </video>
       <!-- End video section -->
+
+      <audio id="bday-audio" src="your-birthday-song.mp3" loop></audio>
+      <button class="message-btn" id="music-toggle-btn" style="margin-bottom:12px;">🎵 Play Birthday Song</button>
 
       <p>To my amazing boyfriend,<br>
       Wishing you the happiest birthday! Here’s to more memories, laughter, and love together.</p>
@@ -129,7 +166,6 @@
         </ul>
       </div>
       <!-- Message Buttons -->
-       
       <h2>Messages for Eruma</h2>
       <div>
         <button class="message-btn" id="message-btn-1">When You Miss Me😢❤️</button>
@@ -140,10 +176,14 @@
         <button class="message-btn" id="message-btn-6">When You Can't Sleep😒</button>
         <button class="message-btn" id="message-btn-7">When you feel irritated😒</button>
       </div>
+      <!-- Gift Button -->
+      <button class="message-btn" id="gift-btn">🎁 Open Your Gift</button>
+
       <div class="footer">
         With all my love,<br>
         Your smol lil MUMU
       </div>
+      <div id="countdown" style="margin-top:18px; color:#e75480; font-weight:bold;"></div>
     </div>
     <!-- Message Modal -->
     <div id="message-modal" class="modal">
@@ -153,7 +193,92 @@
         <p id="modal-message"></p>
       </div>
     </div>
+    <!-- ... other parts of your code remain unchanged ... -->
+<!-- Gift Modal -->
+<div id="gift-modal" class="modal">
+  <div class="modal-content">
+    <span class="close" id="close-gift-modal">&times;</span>
+    <h2>Surprise Gift!</h2>
+    <img src="your-gift-image.jpg" alt="Your Special Gift" style="max-width:80vw; max-height:80vh; width:350px; height:auto; border-radius:20px; margin-top:30px;">
+  </div>
+</div>
+<!-- ... rest of your code ... -->
     <script>
+      // Confetti on load
+      window.onload = function() {
+        confetti({
+          particleCount: 180,
+          spread: 80,
+          origin: { y: 0.6 }
+        });
+      };
+
+      // Typewriter animation
+      const typeMsg = "Happy Birthday, Love!";
+      let i = 0;
+      function typeWriter() {
+        if (i < typeMsg.length) {
+          document.getElementById("typewriter").textContent += typeMsg.charAt(i);
+          i++;
+          setTimeout(typeWriter, 80);
+        }
+      }
+      typeWriter();
+
+      // Animate memories list
+      document.addEventListener("DOMContentLoaded", function() {
+        const memoryItems = document.querySelectorAll('.memories li');
+        memoryItems.forEach((li, idx) => {
+          li.style.animationDelay = (0.3 * idx) + 's';
+        });
+      });
+
+      // Floating heart on click
+      document.body.addEventListener('click', function(e) {
+        let heart = document.createElement('div');
+        heart.className = 'heart';
+        heart.textContent = '❤️';
+        heart.style.left = (e.pageX - 10) + 'px';
+        heart.style.top = (e.pageY - 10) + 'px';
+        document.body.appendChild(heart);
+        setTimeout(() => heart.remove(), 3000);
+      });
+
+      // Birthday music toggle
+      const audio = document.getElementById('bday-audio');
+      const musicBtn = document.getElementById('music-toggle-btn');
+      let playing = false;
+      musicBtn.addEventListener('click', function() {
+        if (!playing) {
+          audio.play();
+          musicBtn.textContent = '⏸ Pause Birthday Song';
+        } else {
+          audio.pause();
+          musicBtn.textContent = '🎵 Play Birthday Song';
+        }
+        playing = !playing;
+      });
+
+      // Birthday countdown
+      function updateCountdown() {
+        // Set next birthday date (e.g., May 26, 2026)
+        const nextBDay = new Date('2026-05-28T00:00:00');
+        const now = new Date();
+        let diff = nextBDay - now;
+        if (diff < 0) {
+          document.getElementById('countdown').textContent = "Happy Birthday, Eruma!";
+          return;
+        }
+        let days = Math.floor(diff / (1000*60*60*24));
+        let hours = Math.floor((diff/(1000*60*60)) % 24);
+        let mins = Math.floor((diff/(1000*60)) % 60);
+        let secs = Math.floor((diff/1000) % 60);
+        document.getElementById('countdown').textContent = 
+          `Time until next birthday: ${days} days ${hours}h ${mins}m ${secs}s`;
+      }
+      setInterval(updateCountdown, 1000);
+      updateCountdown();
+
       // Messages modal functionality
       const messageModal = document.getElementById("message-modal");
       const closeMessageModal = document.getElementById("close-message-modal");
@@ -188,36 +313,370 @@
         },
         6: {
           title: "When You Can't Sleep",
-          message:
-            "Panni maadu kalutha kuttyyy , daily nyt uh work tha enoda pondati nu daily nyt work work nu irunthutu....sudden ah nyt thoonganum nah epdi thookam varum...hmph hmph...athuku tha nyt lam pondati ah nenachitu thoonganu...work ah nenachitu thoonguna apdi tha eruma erumaa.....(ipo ipdi thituveee ana netla papa va mu chest mela padukavachi nalla gentle ah hapr ah stroke panni enoda chella bubu kutty ah thoonga vaipe daaaaa...muah muahhh....apdiyum onaku thookam varale nah nalla matter panitu thoongalam....apdiyum thookam varale nah nala broom stick eduthu adi adi nu onna adicha nalla thoonguva...hehe.)",
-        },
-        7: {
-          title: "When you feel irritated😒",
-          message:
-            "Papa...it is normal to feel irritated over simple stuff da ma...but always remember if u can handle me (the annoying and irritating girlfriend in the whole world), you can handle anything da baby maa...cheer up baby...muah muahhhh"  },
+
+<!doctype html>
+<html>
+  <head>
+    <title>happy birthday hubby!</title>
+    <style>
+      body {
+        background: #ffe0e6;
+        font-family: 'segoe ui', arial, sans-serif;
+        color: #4b2e83;
+        margin: 0;
+        padding: 0;
+      }
+      .container {
+        max-width: 600px;
+        margin: 40px auto;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px #f6b1c3;
+        padding: 32px;
+        text-align: center;
+      }
+      h1 {
+        font-size: 2.5em;
+        margin-bottom: 0.2em;
+        min-height: 1.6em;
+        letter-spacing: 2px;
+      }
+      img {
+        border-radius: 50%;
+        width: 180px;
+        height: 180px;
+        object-fit: cover;
+        margin-bottom: 24px;
+        border: 4px solid #f6b1c3;
+      }
+      /* --- added video styling --- */
+      .birthday-video {
+        margin: 24px auto 32px auto;
+        display: block;
+        border-radius: 16px;
+        border: 3px solid #f6b1c3;
+        box-shadow: 0 2px 12px #f6b1c360;
+      }
+      .memories {
+        margin: 30px 0;
+        text-align: left;
+      }
+      .memories ul {
+        padding-left: 20px;
+      }
+      .memories li {
+        opacity: 0;
+        transform: translatex(-30px);
+        animation: fadeinleft 0.7s forwards;
+      }
+      @keyframes fadeinleft {
+        to { opacity: 1; transform: translatex(0);}
+      }
+      .footer {
+        margin-top: 32px;
+        font-size: 1.1em;
+        color: #b07bac;
+      }
+      /* message modal styles */
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 50;
+        left: 0;
+        top: 0;
+        width: 100vw;
+        height: 100vh;
+        overflow: auto;
+        background: rgba(0,0,0,0.4);
+        justify-content: center;
+        align-items: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s;
+      }
+      .modal.show {
+        display: flex;
+        opacity: 1;
+        pointer-events: auto;
+      }
+      .modal-content {
+        background: #fff;
+        padding: 32px 22px;
+        border-radius: 16px;
+        max-width: 340px;
+        box-shadow: 0 4px 24px #f6b1c3;
+        text-align: center;
+        position: relative;
+        animation: modalzoom 0.4s;
+      }
+      @keyframes modalzoom {
+        0% {transform: scale(0.6);}
+        100% {transform: scale(1);}
+      }
+      .close {
+        position: absolute;
+        right: 13px;
+        top: 9px;
+        font-size: 1.5em;
+        cursor: pointer;
+        color: #b07bac;
+      }
+      .message-btn {
+        margin: 7px 3px;
+        padding: 10px 18px;
+        border: none;
+        background: #f6b1c3;
+        color: #fff;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 1em;
+        transition: background .15s;
+      }
+      .message-btn:hover {
+        background: #e75480;
+      }
+      /* heart floating animation */
+      .heart {
+        position: fixed;
+        font-size: 2em;
+        color: #e75480;
+        opacity: 0.7;
+        animation: floatup 3s linear forwards;
+        z-index: 999;
+        pointer-events: none;
+      }
+      @keyframes floatup {
+        0% { transform: translatey(0); opacity: 0.8;}
+        80% { opacity: 1;}
+        100% { transform: translatey(-200px); opacity: 0;}
+      }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <h1><span id="typewriter"></span></h1>
+      <img src="your-photo.jpg" alt="a lovely photo of us">
+
+      <!-- added video section below the image -->
+      <video class="birthday-video" width="480" height="270" controls poster="video-thumbnail.jpg">
+        <source src="your-birthday-video.mp4" type="video/mp4">
+        <source src="your-birthday-video.webm" type="video/webm">
+        your browser does not support the video tag.
+      </video>
+      <!-- end video section -->
+
+      <audio id="bday-audio" src="your-birthday-song.mp3" loop></audio>
+      <button class="message-btn" id="music-toggle-btn" style="margin-bottom:12px;">🎵 play birthday song</button>
+
+      <p>to my amazing boyfriend,<br>
+      wishing you the happiest birthday! here’s to more memories, laughter, and love together.</p>
+      <div class="memories">
+        <h2>favorite memories together</h2>
+        <ul>
+          <li>our first hug and kiss ❤️🌎</li>
+          <li>that rainy day walk ☔</li>
+          <li>your hilarious dance moves (actually i was watching u the whole time u were dancing on our reunion....u were soooo cute while dancing and i couldnt take my eyes of u) 🕺</li>
+          <li>every moment with you ❤️</li>
+        </ul>
+      </div>
+      <!-- message buttons -->
+      <h2>messages for eruma</h2>
+      <div>
+        <button class="message-btn" id="message-btn-1">when you miss me😢❤️</button>
+        <button class="message-btn" id="message-btn-2">when you need encouragement🤸‍♂️🏋️‍♂️🚵‍♂️</button>
+        <button class="message-btn" id="message-btn-3">when you're feeling down😖</button>
+        <button class="message-btn" id="message-btn-4">when you are sick (having fever)🤒</button>
+        <button class="message-btn" id="message-btn-5">when your poo poo💩💩 won't go</button>
+        <button class="message-btn" id="message-btn-6">when you can't sleep😒</button>
+        <button class="message-btn" id="message-btn-7">when you feel irritated😒</button>
+      </div>
+      <!-- gift button -->
+      <button class="message-btn" id="gift-btn">🎁 open your gift</button>
+
+      <div class="footer">
+        with all my love,<br>
+        your smol lil mumu
+      </div>
+      <div id="countdown" style="margin-top:18px; color:#e75480; font-weight:bold;"></div>
+    </div>
+    <!-- message modal -->
+    <div id="message-modal" class="modal">
+      <div class="modal-content">
+        <span class="close" id="close-message-modal">&times;</span>
+        <h2 id="modal-title"></h2>
+        <p id="modal-message"></p>
+      </div>
+    </div>
+    <!-- ... other parts of your code remain unchanged ... -->
+<!-- gift modal -->
+<div id="gift-modal" class="modal">
+  <div class="modal-content">
+    <span class="close" id="close-gift-modal">&times;</span>
+    <h2>surprise gift!</h2>
+    <img src="your-gift-image.jpg" alt="your special gift" style="max-width:80vw; max-height:80vh; width:350px; height:auto; border-radius:20px; margin-top:30px;">
+  </div>
+</div>
+<!-- ... rest of your code ... -->
+    <script>
+      // confetti on load
+      window.onload = function() {
+        confetti({
+          particlecount: 180,
+          spread: 80,
+          origin: { y: 0.6 }
+        });
       };
 
-      // Message button event listeners
-      for (let i = 1; i <= 7; i++) {
-        document
-          .getElementById(`message-btn-${i}`)
-          .addEventListener("click", function () {
-            modalTitle.textContent = messages[i].title;
-            modalMessage.textContent = messages[i].message;
-            messageModal.style.display = "flex";
-          });
+      // typewriter animation
+      const typemsg = "happy birthday, love!";
+      let i = 0;
+      function typewriter() {
+        if (i < typemsg.length) {
+          document.getelementbyid("typewriter").textcontent += typemsg.charat(i);
+          i++;
+          settimeout(typewriter, 80);
+        }
       }
+      typewriter();
 
-      // Close message modal
-      closeMessageModal.addEventListener("click", function () {
-        messageModal.style.display = "none";
+      // animate memories list
+      document.addeventlistener("domcontentloaded", function() {
+        const memoryitems = document.queryselectorall('.memories li');
+        memoryitems.foreach((li, idx) => {
+          li.style.animationdelay = (0.3 * idx) + 's';
+        });
       });
 
-      // Close modals when clicking outside
-      window.addEventListener("click", function (event) {
-        if (event.target === messageModal) {
-          messageModal.style.display = "none";
+      // floating heart on click
+      document.body.addeventlistener('click', function(e) {
+        let heart = document.createelement('div');
+        heart.classname = 'heart';
+        heart.textcontent = '❤️';
+        heart.style.left = (e.pagex - 10) + 'px';
+        heart.style.top = (e.pagey - 10) + 'px';
+        document.body.appendchild(heart);
+        settimeout(() => heart.remove(), 3000);
+      });
+
+      // birthday music toggle
+      const audio = document.getelementbyid('bday-audio');
+      const musicbtn = document.getelementbyid('music-toggle-btn');
+      let playing = false;
+      musicbtn.addeventlistener('click', function() {
+        if (!playing) {
+          audio.play();
+          musicbtn.textcontent = '⏸ pause birthday song';
+        } else {
+          audio.pause();
+          musicbtn.textcontent = '🎵 play birthday song';
         }
+        playing = !playing;
+      });
+
+      // birthday countdown
+      function updatecountdown() {
+        // set next birthday date (e.g., may 26, 2026)
+        const nextbday = new date('2026-05-28t00:00:00');
+        const now = new date();
+        let diff = nextbday - now;
+        if (diff < 0) {
+          document.getelementbyid('countdown').textcontent = "happy birthday, eruma!";
+          return;
+        }
+        let days = math.floor(diff / (1000*60*60*24));
+        let hours = math.floor((diff/(1000*60*60)) % 24);
+        let mins = math.floor((diff/(1000*60)) % 60);
+        let secs = math.floor((diff/1000) % 60);
+        document.getelementbyid('countdown').textcontent = 
+          `time until next birthday: ${days} days ${hours}h ${mins}m ${secs}s`;
+      }
+      setinterval(updatecountdown, 1000);
+      updatecountdown();
+
+      // messages modal functionality
+      const messagemodal = document.getelementbyid("message-modal");
+      const closemessagemodal = document.getelementbyid("close-message-modal");
+      const modaltitle = document.getelementbyid("modal-title");
+      const modalmessage = document.getelementbyid("modal-message");
+
+      // messages data
+      const messages = {
+        1: {
+          title: "when you miss me😢❤️",
+          message:
+            "even though we’re apart, i can feel you with me in every quiet moment. distance may keep us from seeing each other, but it can’t diminish the bond we share. whenever you look up at the night sky, know that i’m looking at the same stars, thinking of you. every day brings me closer to you, and i hold onto that hope until we’re together again." },
+        2: {
+          title: "when you need encouragement🤸‍♂️🏋️‍♂️🚵‍♂️",
+          message:
+            "you are stronger than you know and braver than you believe. i've seen you overcome so many challenges with grace and determination. whatever you're facing now, i believe in you completely. take a deep breath, stand tall, and remember that i'm cheering for you every step of the way.",
+        },
+        3: {
+          title: "when you're feeling down😖",
+          message:
+            "it's okay not to be okay sometimes. your feelings are valid, and this moment will pass. think of all the storms we've weathered together already. i wish i could be there to hold you, but please know that my heart holds space for your pain. be gentle with yourself today, and remember that tomorrow brings new light.",
+        },
+        4: {
+          title: "when you are sick (having fever)🤒",
+          message:
+            "remember to go to hospital baby....take your medicine da....sleep take some rest da kutty...i know it is hard to face it on your own but trust me ill take good care of my lovely cutie lil patutieeeeeeee when we start living together. ill make  hot soup and cook delecious food for my lil chella kutty muahhhhhh.",
+        },
+        5: {
+          title: "when your poo poo 💩won't go",
+          message:
+            "i'm proud of you for pooping💩 every single day . u do a very good job in pooping💩 bcoz u take 20 mins for it and i know pooping💩 is special for u da...but sometimed pooping may become hard when u eat lot of fastfood like parotta. so to make pooping easier drink plenty of water my love . mumu is here always to assist u in pooping and peeing...but dont poop ur pants because it is haed to wash and u will get nice beatings on ur buttoks.",
+        },
+        6: {
+          title: "when you can't sleep",
+          message:
+            "panni maadu kalutha kuttyyy , daily nyt uh work tha enoda pondati nu daily nyt work work nu irunthutu....sudden ah nyt thoonganum nah epdi thookam varum...hmph hmph...athuku tha nyt lam pondati ah nenachitu thoonganu...work ah nenachitu thoonguna apdi tha eruma erumaa.....(ipo ipdi thituveee ana netla papa va mu chest mela padukavachi nalla gentle ah hapr ah stroke panni enoda chella bubu kutty ah thoonga vaipe daaaaa...muah muahhh....apdiyum onaku thookam varale nah nalla matter panitu thoongalam....apdiyum thookam varale nah nala broom stick eduthu adi adi nu onna adicha nalla thoonguva...hehe.)",
+        },
+        7: {
+          title: "when you feel irritated😒",
+          message:
+            "papa...it is normal to feel irritated over simple stuff da ma...but always remember if u can handle me (the annoying and irritating girlfriend in the whole world), you can handle anything da baby maa...cheer up baby...muah muahhhh"  },
+      };
+
+      // modal animation for messages
+      function showmodal() {
+        messagemodal.classlist.add("show");
+      }
+      function hidemodal() {
+        messagemodal.classlist.remove("show");
+        settimeout(() => messagemodal.style.display = "none", 350);
+      }
+      for (let i = 1; i <= 7; i++) {
+        document.getelementbyid(`message-btn-${i}`).addeventlistener("click", function () {
+          modaltitle.textcontent = messages[i].title;
+          modalmessage.textcontent = messages[i].message;
+          messagemodal.style.display = "flex";
+          settimeout(showmodal, 10);
+        });
+      }
+      closemessagemodal.addeventlistener("click", hidemodal);
+      window.addeventlistener("click", function (event) {
+        if (event.target === messagemodal) hidemodal();
+      });
+
+      // gift modal functionality
+      const giftmodal = document.getelementbyid("gift-modal");
+      const closegiftmodal = document.getelementbyid("close-gift-modal");
+      const giftbtn = document.getelementbyid("gift-btn");
+
+      function showgiftmodal() {
+        giftmodal.classlist.add("show");
+      }
+      function hidegiftmodal() {
+        giftmodal.classlist.remove("show");
+        settimeout(() => giftmodal.style.display = "none", 350);
+      }
+      giftbtn.addeventlistener("click", function () {
+        giftmodal.style.display = "flex";
+        settimeout(showgiftmodal, 10);
+      });
+      closegiftmodal.addeventlistener("click", hidegiftmodal);
+      window.addeventlistener("click", function (event) {
+        if (event.target === giftmodal) hidegiftmodal();
       });
     </script>
   </body>
